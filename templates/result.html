@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>분석 결과</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>AI 분석 결과</h1>
+    <h2>📋 수질 분석 요약</h2>
+    <p>{{ advice }}</p>
+
+    <h2>📸 사진 분석 결과</h2>
+    <p>{{ image_result }}</p>
+
+    <img src="/static/upload.jpg" alt="업로드된 사진" width="300">
+    <br><br>
+    <a href="/">🔁 다시 분석하기</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>어항 수질 분석 AI</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script>
+    function showLoadingMessage() {
+      const form = document.querySelector("form");
+      const loading = document.createElement("p");
+      loading.innerText = "🧠 AI 분석 처리 중입니다... 잠시만 기다려 주세요.";
+      loading.style.color = "#2a6f97";
+      loading.style.fontWeight = "bold";
+      loading.style.marginTop = "10px";
+      form.appendChild(loading);
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>어항 수질 정보 입력</h1>
+    <form action="/analyze" method="POST" enctype="multipart/form-data" onsubmit="showLoadingMessage()">
+      <label>pH 수치: <input type="number" step="0.1" name="ph"></label>
+      <label>TDS: <input type="number" name="tds"></label>
+      <label>수온: <input type="number" step="0.1" name="temp"></label>
+      <label>어종: <input type="text" name="fish"></label>
+      <label>질산염: <input type="number" step="0.1" name="no3"></label>
+      <label>아질산염: <input type="number" step="0.1" name="no2"></label>
+      <label>암모니아: <input type="number" step="0.1" name="nh3"></label>
+      <label>경도(GH): <input type="number" step="0.1" name="gh"></label>
+      <label>어항 크기: <input type="text" name="tank"></label>
+      <label>바닥재: <input type="text" name="substrate"></label>
+      <label>여과기: <input type="text" name="filter"></label>
+      <label>기타: <input type="text" name="others"></label>
+      <label>물고기 사진: <input type="file" name="fish_image"></label>
+      <button type="submit">AI 분석 시작</button>
+    </form>
+  </div>
+</body>
+</html>

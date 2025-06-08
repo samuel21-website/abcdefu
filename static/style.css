@@ -1,0 +1,42 @@
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f4f9ff;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  input, button {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    background-color: #2a6f97;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #225b7c;
+  }
+  img {
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+  }
+  .adsense {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
