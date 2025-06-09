@@ -1,9 +1,7 @@
+# ✅ app.py (경량화 버전 – KoGPT2 텍스트 분석만 유지)
 from flask import Flask, render_template, request
 from transformers import GPT2LMHeadModel, PreTrainedTokenizerFast
-from ultralytics import YOLO
 import torch
-from PIL import Image
-import os
 
 app = Flask(__name__)
 
@@ -11,8 +9,6 @@ tokenizer = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2")
 text_model = GPT2LMHeadModel.from_pretrained("skt/kogpt2-base-v2")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 text_model.to(device)
-
-yolo_model = YOLO("yolov8n.pt")
 
 @app.route("/")
 def index():
@@ -34,19 +30,12 @@ def analyze():
     others = request.form.get("others")
 
     prompt = f"""
-아래 어항 상태를 분석하여 다음 형식에 맞춰 전문가처럼 설명하세요.
+당신은 수질 전문가입니다. 아래 어항 상태를 분석하여 아래 형식으로 신뢰도 있고 정확하게 요약하십시오.
+반복 금지, 말장난 금지, 의미 없는 문장 금지, 요점만 정리하십시오.
 
-[분석 템플릿]
+1️⃣ 요약 (한 문장)
+2️⃣ 세부 분석 항목별 문제점 + 권장 조치 (4~5줄 이내)
 
-1️⃣ 요약:
-- 전체 상태를 한 문장으로 요약해 주세요.
-
-2️⃣ 세부 설명:
-- 수질 항목별 문제와 이유
-- 생물별 위험 요소
-- 권장 조치 및 개선 방법
-
-어항 상태:
 - pH: {ph}, TDS: {tds}, 수온: {temp} ℃
 - 질산염: {no3}, 아질산염: {no2}, 암모니아: {nh3}, 경도: {gh}
 - 어종: {fish}
@@ -61,27 +50,11 @@ def analyze():
         top_k=50,
         top_p=0.95,
         temperature=0.8,
-        repetition_penalty=1.2
+        repetition_penalty=1.3
     )
     advice = tokenizer.decode(output[0], skip_special_tokens=True)[len(prompt):].strip()
 
-    image = request.files.get("fish_image")
-    image_result = "업로드된 이미지 없음"
-    if image:
-        path = os.path.join("static", "upload.jpg")
-        image.save(path)
-        results = yolo_model(path)
-        labels = results[0].names
-        boxes = results[0].boxes
-        if boxes:
-            image_result = "감지된 객체 목록:\n"
-            for box in boxes:
-                cls = int(box.cls[0].item())
-                image_result += f"- {labels[cls]}\n"
-        else:
-            image_result = "감지된 객체 없음"
-
-    return render_template("result.html", advice=advice, image_result=image_result)
+    return render_template("result.html", advice=advice, image_result="사진 분석 기능은 제외됨.")
 
 if __name__ == "__main__":
     app.run(debug=True)
