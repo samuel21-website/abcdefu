@@ -1,12 +1,12 @@
-# ✅ app.py (경량화 버전 – KoGPT2 텍스트 분석만 유지)
+# ✅ app.py (초경량 버전 – KoGPT2 제거, Hugging Face tiny GPT2 사용)
 from flask import Flask, render_template, request
-from transformers import GPT2LMHeadModel, PreTrainedTokenizerFast
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import torch
 
 app = Flask(__name__)
 
-tokenizer = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2")
-text_model = GPT2LMHeadModel.from_pretrained("skt/kogpt2-base-v2")
+tokenizer = GPT2Tokenizer.from_pretrained("sshleifer/tiny-gpt2")
+text_model = GPT2LMHeadModel.from_pretrained("sshleifer/tiny-gpt2")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 text_model.to(device)
 
@@ -30,11 +30,13 @@ def analyze():
     others = request.form.get("others")
 
     prompt = f"""
-당신은 수질 전문가입니다. 아래 어항 상태를 분석하여 아래 형식으로 신뢰도 있고 정확하게 요약하십시오.
-반복 금지, 말장난 금지, 의미 없는 문장 금지, 요점만 정리하십시오.
+어항 상태를 요약하고 분석하시오:
 
-1️⃣ 요약 (한 문장)
-2️⃣ 세부 분석 항목별 문제점 + 권장 조치 (4~5줄 이내)
+1️⃣ 요약:
+전체 상황을 한 문장으로 정리하십시오.
+
+2️⃣ 세부 분석:
+수질 문제와 권장 조치를 항목별로 서술하십시오.
 
 - pH: {ph}, TDS: {tds}, 수온: {temp} ℃
 - 질산염: {no3}, 아질산염: {no2}, 암모니아: {nh3}, 경도: {gh}
@@ -45,12 +47,12 @@ def analyze():
     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
     output = text_model.generate(
         input_ids,
-        max_length=300,
+        max_length=200,
         do_sample=True,
         top_k=50,
         top_p=0.95,
         temperature=0.8,
-        repetition_penalty=1.3
+        repetition_penalty=1.2
     )
     advice = tokenizer.decode(output[0], skip_special_tokens=True)[len(prompt):].strip()
 
